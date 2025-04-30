@@ -1,15 +1,15 @@
-classdef ControlPanel
+classdef ModeSTransponder
     properties (Access = private)
-        % Array of 3 integer coordinates: X, Y, Z
+        % Pointer to array of 3 integer coordinates: X, Y, Z
         coords
+        % Array of pointers to TA/RA buffers within other control panels
+        ext_advisories
         % Integer that represents mode: 
         %   0 = Stand-by, 
         %   1 = Transponder 
         %   2 = TA Only
         %   3 = TA/RA
         mode
-        % List of other control panels
-        controlPanels
     end
     methods
         function obj = ControlPanel(init_coords, init_mode)
@@ -23,7 +23,7 @@ classdef ControlPanel
                 obj.coords = init_coords;
                 obj.mode = init_mode;
             end
-            obj.controlPanels = [];
+            obj.ext_advisories = [];
         end
         function setCoords(obj, new_coords)
             obj.coords = new_coords
@@ -47,11 +47,8 @@ classdef ControlPanel
         function curr_mode = getMode(obj)
             curr_mode = obj.mode
         end
-        function addControlPanel(obj, new_obj)
-            obj.controlPanels = [obj.controlPanels, new_obj]
-        end
-        function getControlPanels(obj)
-            obj.controlPanels
+        function addExtCoords(obj, new_coords)
+            obj.ext_coords = [obj.ext_coords, new_coords]
         end
     end
 end
