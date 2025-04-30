@@ -1,4 +1,4 @@
-clf;
+%clf;
 positions = [30 40 14000; 35 45 13500; 60 80 10500];
 id = 1; pos_i = positions(id, :);
 

@@ -1,8 +1,8 @@
-clf;
+%clf;
 positions = [30 40 14000; 35 45 13500; 60 80 10500];
-id = 3; pos_i = positions(id, :);
+id = 2; pos_i = positions(id, :);
 
-figure('Name', 'TCAS Panel - Aircraft 3', 'NumberTitle', 'off');
+figure('Name', 'TCAS Panel - Aircraft 2', 'NumberTitle', 'off');
 uicontrol('Style', 'popupmenu', 'Position', [120 450 100 25], 'String', {'Stand-by', 'TA Only', 'Auto'});
 
 ax = axes('Units', 'pixels', 'Position', [50, 150, 400, 250]);
@@ -19,7 +19,7 @@ for j = 1:3
     elseif dist < 15 && abs(dz) < 2000
         theta = linspace(0, 2*pi, 100);
         fill(pos_j(1) + cos(theta)*1.5, pos_j(2) + sin(theta)*1.5, 'y');
-        text(pos_j(1)+2, pos_j(2), sprintf('%.1f nmi', dist), 'Color', 'k');
+        text(pos_j(1)+2, pos_j(2), sprintf('%.1f ft', dist), 'Color', 'k');
         advisory = sprintf('TA %.1f nmi, %d ft', dist, dz);
     else
         plot([pos_j(1), pos_j(1)+1, pos_j(1), pos_j(1)-1, pos_j(1)], ...
