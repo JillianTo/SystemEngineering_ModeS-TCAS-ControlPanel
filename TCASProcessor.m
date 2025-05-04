@@ -36,9 +36,11 @@ classdef TCASProcessor
             num_ext_coords = size(ext_coords,2);
             advisories = cell(1, num_ext_coords);
             for i = num_ext_coords
+                % Save current device ID
+                device_id = ext_coords{i}(1);
                 % Calculate difference in altitude between another
                 % aircraft and ours
-                alt_diff = ext_coords(i,1:3)-obj.coords(1:3);
+                alt_diff = ext_coords{i}(4)-obj.coords(3);
                 % If theob ohter aircraft is above ours, but a distance 
                 % less than TA threshold 
                 if alt_diff < obj.ta_threshold
@@ -47,11 +49,11 @@ classdef TCASProcessor
                     if alt_diff < obj.ra_threshold
                         % Set advisory to altitude difference, and
                         % advisory to RA
-                        advisories{i} = [alt_diff, 2];
+                        advisories{i} = [device_id, alt_diff, 2];
                     else
                         % Set advisory to altitude difference, and 
                         % advisory to TA 
-                        advisories{i} = [alt_diff, 1];
+                        advisories{i} = [device_id, alt_diff, 1];
                     end
                 elseif -alt_diff < obj.ta_threshold
                     % If distance is less than RA threshold, and set to
@@ -59,11 +61,11 @@ classdef TCASProcessor
                     if -alt_diff < obj.ra_threshold
                         % Set advisory to altitude difference, and
                         % advisory to RA
-                        advisories{i} = [alt_diff, 2];
+                        advisories{i} = [device_id, alt_diff, 2];
                     else
                         % Set advisory to altitude difference, and 
                         % advisory to TA 
-                        advisories{i} = [alt_diff, 1];
+                        advisories{i} = [device_id, alt_diff, 1];
                     end
                 end
             end
