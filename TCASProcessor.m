@@ -32,40 +32,44 @@ classdef TCASProcessor
             coords = obj.coords;
         end
         % Determine TAs/RAs from this and other TCAS units' coordinates
-        function advisories = processAdvisories(obj, ext_coords)
-            num_ext_coords = size(ext_coords,2);
-            advisories = cell(1, num_ext_coords);
-            for i = num_ext_coords
-                % Save current device ID
-                device_id = ext_coords{i}(1);
-                % Calculate difference in altitude between another
-                % aircraft and ours
-                alt_diff = ext_coords{i}(4)-obj.coords(3);
-                % If theob ohter aircraft is above ours, but a distance 
-                % less than TA threshold 
-                if alt_diff < obj.ta_threshold
-                    % If distance is less than RA threshold, and set to
-                    % transmit RAs
-                    if alt_diff < obj.ra_threshold
-                        % Set advisory to altitude difference, and
-                        % advisory to RA
-                        advisories{i} = [device_id, alt_diff, 2];
-                    else
-                        % Set advisory to altitude difference, and 
-                        % advisory to TA 
-                        advisories{i} = [device_id, alt_diff, 1];
-                    end
-                elseif -alt_diff < obj.ta_threshold
-                    % If distance is less than RA threshold, and set to
-                    % transmit RAs
-                    if -alt_diff < obj.ra_threshold
-                        % Set advisory to altitude difference, and
-                        % advisory to RA
-                        advisories{i} = [device_id, alt_diff, 2];
-                    else
-                        % Set advisory to altitude difference, and 
-                        % advisory to TA 
-                        advisories{i} = [device_id, alt_diff, 1];
+        function advisories = processAdvisories(obj, mode, ext_coords)
+            if mode < 1
+                advisories = cell(1)
+            else
+                num_ext_coords = size(ext_coords,2);
+                advisories = cell(1, num_ext_coords);
+                for i = num_ext_coords
+                    % Save current device ID
+                    device_id = ext_coords{i}(1);
+                    % Calculate difference in altitude between another
+                    % aircraft and ours
+                    alt_diff = ext_coords{i}(4)-obj.coords(3);
+                    % If theob ohter aircraft is above ours, but a distance 
+                    % less than TA threshold 
+                    if alt_diff < obj.ta_threshold
+                        % If distance is less than RA threshold, and set to
+                        % transmit RAs
+                        if mode > 2 && alt_diff < obj.ra_threshold
+                            % Set advisory to altitude difference, and
+                            % advisory to RA
+                            advisories{i} = [device_id, alt_diff, 2];
+                        else
+                            % Set advisory to altitude difference, and 
+                            % advisory to TA 
+                            advisories{i} = [device_id, alt_diff, 1];
+                        end
+                    elseif -alt_diff < obj.ta_threshold
+                        % If distance is less than RA threshold, and set to
+                        % transmit RAs
+                        if mode > 2 && -alt_diff < obj.ra_threshold
+                            % Set advisory to altitude difference, and
+                            % advisory to RA
+                            advisories{i} = [device_id, alt_diff, 2];
+                        else
+                            % Set advisory to altitude difference, and 
+                            % advisory to TA 
+                            advisories{i} = [device_id, alt_diff, 1];
+                        end
                     end
                 end
             end
