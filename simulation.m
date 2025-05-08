@@ -15,8 +15,12 @@ num_frames = 60/frametime;
 num_units = 3;
 
 % Set modes for each unit
+% 0 - Stand-by
+% 1 - Transponder
+% 2 - TA Only
+% 3 - TA/RA
 modes = zeros(1, num_units);
-modes(1) = 3;
+modes(1) = 2;
 modes(2) = 3;
 modes(3) = 3;
 
@@ -34,9 +38,9 @@ factor = (1/60/60)*frametime;
 % Set velocities of aircraft
 % Velocity is ordered as [X, Y, Z] and units are [nmi, nmi, ft/hr]
 vel = zeros(num_units, 3);
-vel(1, :) = [-136, 124, 1]*factor;
-vel(2, :) = [-300, -300, 1]*factor;
-vel(3, :) = [300, 300, 1]*factor;
+vel(1, :) = [-136, 124, 100]*factor;
+vel(2, :) = [-1000, -1000, 500]*factor;
+vel(3, :) = [1000, 1000, -500]*factor;
 
 % Calculate position
 for i = 2:num_frames
@@ -116,7 +120,7 @@ for i = 1:num_frames
                 set(h(j), 'XData', pos(j, i, 1), 'YData', pos(j, i, 2), 'Marker', 'square', 'Color', 'r');
             end
             % Set text
-            if color ~= 'w'
+            if size(advisories, 2) > 1
                 % Descending
                 if advisories{k}(4) < 0
                     str = sprintf('%.0f ft v', advisories{k}(2));
