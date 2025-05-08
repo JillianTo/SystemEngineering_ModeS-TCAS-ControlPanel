@@ -15,29 +15,42 @@ classdef TCAS
     end
     methods
         % Constructor
-        function obj = TCAS(device_id, coords, mode)
-            obj.processor = TCASProcessor(coords);
+        function obj = TCAS(device_id, mode, coords, alt_vel)
+            obj.processor = TCASProcessor(coords, alt_vel);
             obj.transponder = ModeSTransponder(device_id);
             obj.mode = mode;
         end
         % Set coordinates in TCAS processor
-        function setCoords(obj, coords)
-            obj.processor.setCoords(coords);
+        function obj = setCoords(obj, coords)
+            if obj.mode > 1
+                obj.processor = obj.processor.setCoords(coords);
+            end
         end
-        % Get coordinates from 
+        % Get coordinates from Mode S transponder
+        function coords = getCoords(obj)
+            if obj.mode > 0
+                coords = obj.transponder.getCoords(obj.processor);
+            else
+                coords = [];
+            end
+        end
         % Set mode for TCAS
         function obj = setMode(obj, mode)
             obj.mode = mode;
         end
         % Transmit processed advisories from TCAS processor
         function advisories = getAdvisories(obj, ext_coords)
-            advisories = obj.processor.processAdvisories(obj.mode, ext_coords);
+            if obj.mode > 1
+                advisories = obj.transponder.getAdvisories(obj.processor, obj.mode, ext_coords);
+            else
+                advisories = [];
+            end
         end
         % Filter all incoming advisories to just the ones meant for this
         % TCAS unit
         function filtered_advisories = filterIncomingAdvisories(obj, advisories)
             if obj.mode > 1
-                filtered_advisories = obj.transponder.filterIncomingAdvisories(advisories);
+                filtered_advisories = obj.transponder.filterIncomingAdvisories(advisories, obj.transponder.getSquawkCode());
             else
                 filtered_advisories = [];
             end

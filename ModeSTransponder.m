@@ -3,29 +3,22 @@
 %%
 classdef ModeSTransponder
     properties (Access = private)
-        device_id
+        squawk_code
     end
     methods
-        function obj = ModeSTransponder(device_id)
-            obj.device_id = device_id;
+        function obj = ModeSTransponder(squawk_code)
+            obj.squawk_code = squawk_code;
+        end
+        function squawk_code = getSquawkCode(obj)
+            squawk_code = obj.squawk_code;
         end
         function coords = getCoords(obj, processor)
-            coords = [obj.device_id, processor.getCoords()];
+            coords = [obj.squawk_code, processor.getCoords(), processor.getAltDir()];
         end
-        function advisories = getAdvisories(obj, processor)
-            advisories = [obj.device_id, processor.processAdvisories()];
-        end
-        % Get advisories sent from other transponders to this
-        function filtered_advisories = filterIncomingAdvisories(obj, advisories)
-            num_advisories = size(advisories,2);
-            filtered_advisories = cell(1);
-            for i = num_advisories
-                if advisories{i}(1) == obj.device_id
-                    filtered_advisories = [filtered_advisories, advisories{i}(2:3)];
-                end
-            end
-            % Remove first index in cell array because it's empty
-            filtered_advisories = filtered_advisories(2:size(filtered_advisories,2));
+        function advisories = getAdvisories(obj, processor, mode, ext_coords)
+            advisories = processor.processAdvisories(mode, ext_coords);
+            advisories = advisories(~cellfun('isempty', advisories));
+            advisories = [obj.squawk_code, advisories];
         end
     end
 end
