@@ -9,7 +9,7 @@ squawk_codes = containers.Map([1, 2, 3], [1, 2, 3]);
 frametime = 0.02;
 
 % Set number of frames to animate
-num_frames = 60/frametime;
+num_frames = 15/frametime;
 
 % Set number of TCAS-equipped aircraft
 num_units = 3;
@@ -20,7 +20,7 @@ num_units = 3;
 % 2 - TA Only
 % 3 - TA/RA
 modes = zeros(1, num_units);
-modes(1) = 2;
+modes(1) = 3;
 modes(2) = 3;
 modes(3) = 3;
 
@@ -36,11 +36,13 @@ pos(3, 1, :) = [34 44 1700];
 factor = (1/60/60)*frametime;
 
 % Set velocities of aircraft
-% Velocity is ordered as [X, Y, Z] and units are [nmi, nmi, ft/hr]
+% Velocity is ordered as [X, Y, Z] and units are [nmi/hr, nmi/hr, ft/hr]
 vel = zeros(num_units, 3);
 vel(1, :) = [-136, 124, 100]*factor;
-vel(2, :) = [-1000, -1000, 500]*factor;
-vel(3, :) = [1000, 1000, -500]*factor;
+%vel(2, :) = [-1000, -1000, -500]*factor;
+vel(2, :) = [1000, 500, 700]*factor;
+vel(3, :) = [-700, -1000, -500]*factor;
+%vel(3, :) = [1000, 1000, 500]*factor;
 
 % Calculate position
 for i = 2:num_frames
@@ -69,20 +71,24 @@ h(2) = plot(pos(2, 1, 1), pos(2, 1, 2), 'diamond', 'Color', 'k');
 h(3) = plot(pos(3, 1, 1), pos(3, 1, 2), 'diamond', 'Color', 'k'); 
 t(1) = text('Color', 'w');
 t(2) = text('Color', 'w');
+%annotation('textbox', [0.75, 0.1, 0.1, 0.1], 'String', "placeholder");
 hold off
 
 % Animate the points
 for i = 1:num_frames
-    % Get all advisories in airspace not from this unit
-    all_advisories = [];
     coords = cell(1, num_units-1);
     curr_coords_idx = 1;   
     for j = 2:num_units
-        coords{curr_coords_idx} = units{j}.getCoords();
-        curr_coords_idx = curr_coords_idx+1;
+    	coords{curr_coords_idx} = units{j}.getCoords();
+    	curr_coords_idx = curr_coords_idx+1;
     end
     coords = coords(~cellfun('isempty', coords));
     advisories = units{1}.getAdvisories(coords);
+    % Get all advisories in airspace not from this unit
+    other_advisories = cell(1, num_units-1);
+    for j = 2:num_units
+        other_advisories{j} = units{j}.getAdvisories(coords);
+    end
     % Update each point's position
     for j = 1:num_units
         % Set coords in unit
@@ -131,7 +137,7 @@ for i = 1:num_frames
                 end
                 set(t(j-1), 'Position', [pos(j, i, 1)+0.5, pos(j, i, 2), 0], 'String', str, 'Color', color);
             else
-                set(t(j-1), 'Color', 'w');
+                set(t(j-1), 'Color', color)
             end
             clear advisory
         else

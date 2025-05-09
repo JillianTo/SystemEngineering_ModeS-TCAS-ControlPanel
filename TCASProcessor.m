@@ -92,7 +92,7 @@ classdef TCASProcessor
             num_advisories = size(advisories,2);
             filtered_advisories = cell(1);
             for i = num_advisories
-                if advisories{i}(1) == squawk_code
+                if cell2mat(advisories{i}(1)) == squawk_code
                     filtered_advisories = [filtered_advisories, advisories{i}(2:4)];
                 end
             end

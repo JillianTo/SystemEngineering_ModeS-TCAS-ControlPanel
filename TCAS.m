@@ -50,7 +50,7 @@ classdef TCAS
         % TCAS unit
         function filtered_advisories = filterIncomingAdvisories(obj, advisories)
             if obj.mode > 1
-                filtered_advisories = obj.transponder.filterIncomingAdvisories(advisories, obj.transponder.getSquawkCode());
+                filtered_advisories = obj.processor.filterIncomingAdvisories(advisories, obj.transponder.getSquawkCode());
             else
                 filtered_advisories = [];
             end
